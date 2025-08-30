@@ -1,0 +1,508 @@
+<!DOCTYPE html><html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ژورنال معاملاتی من</title>
+  <meta name="description" content="ژورنال معاملاتی تحت وب با ذخیره‌سازی محلی، چک‌لیست، آمار و خروجی JSON" />
+  <meta name="theme-color" content="#0ea5e9" />  <!-- iOS PWA basics (Add to Home Screen works manually) -->  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ژورنال ترید">  <!-- Icons (embedded Base64) -->  <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsSAAALEgHS3X78AAAAGXRFWHRTb2Z0d2FyZQBwYWludC5uZXQgNC4yLjFxB3ZkAAABmklEQVR4Xu2ZMU7DQBCEv3hVbqQ1m4G2Qw5gQ0mQbE8cQJ6C0F0r6o2g6r7I6k3s6p2q7KQxg3lq0Ff0i8dNh8v1mZ4+eWmM7cMYf7y7hCw0r8cCz+3M2yq2dZxZ7kqKx1w0l3qC8rP2h3m0vJ0d1vQxg6Ew0s2w0j5n6n9m2oFQw5Qx3wM8t9t+2yH0rZLwL0c3z6mXH5m3Jqg3EJ8v4q7bGxW0y0rK0Qw0r3nqR6B0w+9v9KkVJ6r1cM3pQqg9xG2G2gU0W6X2r5h4m0o9Z2e9C7j8kQmLw6m9h4n9b8f8t1zZ1Jv6n2S8JwQH0QdB6lS4bC3iMTq6m7r1qO6k1r7kqg2zYlq9x7b9J7T3t9s4T1Q2iQ8i9gY0d5sQ0Jj8a8E1zQm5v4kqg4T4m3p2GmJmQyC0Z2VtqZ0mHkq3u3oWwQdUQv1p2FJrS+8qiwN2w0Gxv8qj8oYQ3uQm9r8zHn4y7m9q2J9k3mK8Lw2wQkqQ8g7oJtJ6Zb8eX6gW6mQm6F8z8+g8mB0Gx5+ye5r8p9m2cJxF+t6o5m+6m0o7gFQ8m2wz4nJr8o3l2hSg2w8e3t8H8G3Vd3c4m0AAAAASUVORK5CYII=" />
+  <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eNT8AAAACXBIWXMAAAsSAAALEgHS3X78AAAAGXRFWHRTb2Z0d2FyZQBwYWludC5uZXQgNC4yLjFxB3ZkAAAE4UlEQVR4Xu3SMQEAIAwEsd9/ybx6oQwjpJ4m0QHf2gkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4dK3rAQAAAAAAAAAAAAAAAF8M0m0BAAAAAAAAAAAAAAAA/Hm7bwEAAAAAAAAAAAAAAAA8n9c3AQAAAAAAAAAAAAAAAPx5u28BAAAAAAAAAAAAAAAAAJb0iGgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALwq7DEAAHkq2c9AAAAAElFTkSuQmCC" />  <style>
+    :root{--bg:#0b1220;--card:#0f172a;--muted:#94a3b8;--pri:#0ea5e9;--ok:#10b981;--err:#ef4444;--warn:#f59e0b;--ring:#22d3ee}
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;font-family:IRANSans, Vazirmatn, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; background:linear-gradient(180deg,#0b1220 0,#0b1220 200px,#0b1220 100%); color:#e5e7eb}
+    a{color:var(--pri)}
+    .container{max-width:1100px;margin:0 auto;padding:18px}
+    header{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
+    .title{font-size:22px;font-weight:800;letter-spacing:-.3px}
+    .subtitle{color:var(--muted);font-size:12.5px}
+    .card{background:var(--card);border:1px solid #1f2937;border-radius:16px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+    .grid{display:grid;gap:12px}
+    @media(min-width:900px){.grid-2{grid-template-columns:1fr 1fr}.grid-3{grid-template-columns:1fr 1fr 1fr}}
+    label{display:block;font-size:12px;color:#cbd5e1;margin:6px 0}
+    input,select,textarea{width:100%;padding:10px 12px;border-radius:12px;border:1px solid #334155;background:#0b1220;color:#e5e7eb;outline:none}
+    input:focus,select:focus,textarea:focus{border-color:var(--ring);box-shadow:0 0 0 4px rgba(34,211,238,.15)}
+    .row{display:grid;grid-template-columns:repeat(12,1fr);gap:10px}
+    .col-3{grid-column:span 3}.col-4{grid-column:span 4}.col-6{grid-column:span 6}.col-12{grid-column:span 12}
+    .btn{padding:10px 14px;border-radius:12px;border:1px solid #1f2937;background:#111827;color:#e5e7eb;cursor:pointer}
+    .btn:hover{filter:brightness(1.05)}
+    .btn.pri{background:linear-gradient(135deg,#0ea5e9,#22d3ee);color:#041018;border:none}
+    .btn.ok{background:linear-gradient(135deg,#10b981,#34d399);border:none;color:#041018}
+    .btn.err{background:linear-gradient(135deg,#ef4444,#f87171);border:none}
+    .btn.ghost{background:transparent;border:1px dashed #334155;color:#cbd5e1}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap}
+    .section-title{font-weight:700;margin:6px 0 10px}
+    .caps{font-size:12px;letter-spacing:.2px;color:#94a3b8}
+    .tag{display:inline-block;padding:3px 8px;border-radius:999px;border:1px solid #334155;background:#111827;font-size:11px;color:#cbd5e1;margin-left:6px}
+    .kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    @media(min-width:900px){.kpis{grid-template-columns:repeat(6,1fr)}}
+    .kpi{background:#0b1220;border:1px solid #1f2937;border-radius:14px;padding:12px}
+    .kpi .h{font-size:12px;color:#94a3b8}
+    .kpi .v{font-size:18px;font-weight:800;margin-top:4px}
+    table{width:100%;border-collapse:separate;border-spacing:0 8px}
+    th,td{text-align:right;padding:8px 10px}
+    th{font-size:12px;color:#94a3b8}
+    tbody tr{background:#0b1220;border:1px solid #1f2937}
+    tbody tr td:first-child{border-radius:10px 0 0 10px}
+    tbody tr td:last-child{border-radius:0 10px 10px 0}
+    .chip{font-size:11px;border-radius:999px;padding:3px 8px;display:inline-block}
+    .chip.buy{background:rgba(16,185,129,.1);color:#34d399}
+    .chip.sell{background:rgba(239,68,68,.1);color:#f87171}
+    .chip.win{background:rgba(16,185,129,.15);color:#22c55e}
+    .chip.loss{background:rgba(239,68,68,.15);color:#ef4444}
+    .muted{color:#94a3b8}
+    canvas{width:100%;height:220px;background:#0b1220;border:1px solid #1f2937;border-radius:12px}
+    .hr{height:1px;background:linear-gradient(90deg,transparent,#1f2937,transparent);margin:14px 0}
+    .note{font-size:12px;color:#94a3b8}
+  </style></head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <div class="title">ژورنال معاملاتی</div>
+        <div class="subtitle">ثبت دقیق تریدها + چک‌لیست + آمار + خروجی/ورودی JSON — داده‌ها فقط روی دستگاه شما ذخیره می‌شود</div>
+      </div>
+      <div class="toolbar">
+        <button class="btn pri" id="btnSave">ذخیره معامله</button>
+        <button class="btn" id="btnExport" title="خروجی JSON">خروجی</button>
+        <button class="btn" id="btnImport" title="ورود از JSON">ورودی</button>
+        <button class="btn ghost" id="btnClear">حذف همه</button>
+      </div>
+    </header><section class="card">
+  <div class="section-title">فرم معامله</div>
+  <div class="row">
+    <div class="col-3">
+      <label>تاریخ</label>
+      <input type="date" id="date" />
+    </div>
+    <div class="col-3">
+      <label>ساعت ورود</label>
+      <input type="time" id="timeIn" />
+    </div>
+    <div class="col-3">
+      <label>نماد</label>
+      <input id="symbol" placeholder="مثلاً: EURUSD یا BTCUSDT" />
+    </div>
+    <div class="col-3">
+      <label>جهت</label>
+      <select id="side">
+        <option value="BUY">خرید (Buy)</option>
+        <option value="SELL">فروش (Sell)</option>
+      </select>
+    </div>
+    <div class="col-3">
+      <label>تایم‌فریم</label>
+      <select id="tf">
+        <option>M1</option><option>M5</option><option>M15</option><option>M30</option>
+        <option>H1</option><option>H4</option><option>D1</option><option>W1</option>
+      </select>
+    </div>
+    <div class="col-3">
+      <label>حجم (لات/واحد)</label>
+      <input id="size" type="number" step="any" placeholder="مثلاً 0.1" />
+    </div>
+    <div class="col-3">
+      <label>قیمت ورود</label>
+      <input id="entry" type="number" step="any" />
+    </div>
+    <div class="col-3">
+      <label>حد ضرر (SL)</label>
+      <input id="sl" type="number" step="any" />
+    </div>
+    <div class="col-3">
+      <label>حد سود (TP)</label>
+      <input id="tp" type="number" step="any" />
+    </div>
+    <div class="col-3">
+      <label>نسبت ریسک به ریوارد (خودکار)</label>
+      <input id="rr" disabled placeholder="—" />
+    </div>
+    <div class="col-6">
+      <label>دلایل ورود (چک‌لیست)</label>
+      <div class="grid grid-3">
+        <label><input type="checkbox" class="ck" value="trend" /> روند مشخص است</label>
+        <label><input type="checkbox" class="ck" value="signal" /> سیگنال تکنیکال تایید شده</label>
+        <label><input type="checkbox" class="ck" value="sr" /> در نزدیکی حمایت/مقاومت منطقی</label>
+        <label><input type="checkbox" class="ck" value="rrPlan" /> R:R حداقل 1:1.5</label>
+        <label><input type="checkbox" class="ck" value="psych" /> وضعیت ذهنی مناسب</label>
+        <label><input type="checkbox" class="ck" value="mm" /> مدیریت سرمایه رعایت شده</label>
+      </div>
+    </div>
+    <div class="col-12"><div class="hr"></div></div>
+    <div class="col-3">
+      <label>تاریخ خروج</label>
+      <input type="date" id="dateOut" />
+    </div>
+    <div class="col-3">
+      <label>ساعت خروج</label>
+      <input type="time" id="timeOut" />
+    </div>
+    <div class="col-3">
+      <label>قیمت خروج</label>
+      <input id="exit" type="number" step="any" />
+    </div>
+    <div class="col-3">
+      <label>دلیل خروج</label>
+      <select id="exitReason">
+        <option value="">—</option>
+        <option>TP</option>
+        <option>SL</option>
+        <option>بستن دستی</option>
+      </select>
+    </div>
+    <div class="col-3">
+      <label>سود/ضرر (واحد پولی)</label>
+      <input id="pnl" type="number" step="any" placeholder="مثلاً 25-" />
+    </div>
+    <div class="col-3">
+      <label>درصد تغییر (%) (خودکار)</label>
+      <input id="pct" disabled placeholder="—" />
+    </div>
+    <div class="col-6">
+      <label>یادداشت</label>
+      <input id="notes" placeholder="نکات این معامله..." />
+    </div>
+  </div>
+  <div class="note">نکته: اگر قیمت‌های ورود/خروج/SL/TP را پر کنید، نسبت R:R و درصد تغییر به‌صورت خودکار محاسبه می‌شود. مقدار سود/ضرر دلخواه است و می‌توانید دستی وارد کنید.</div>
+</section>
+
+<div style="height:12px"></div>
+
+<section class="grid grid-2">
+  <div class="card">
+    <div class="section-title">آمار و گزارش</div>
+    <div class="kpis" id="kpis"></div>
+    <div class="hr"></div>
+    <canvas id="equity"></canvas>
+    <div class="note">نمودار: اکوییتی کروم بر اساس مجموع تجمعی سود/ضرر.</div>
+  </div>
+  <div class="card">
+    <div class="section-title">فیلترها</div>
+    <div class="row">
+      <div class="col-4">
+        <label>از تاریخ</label>
+        <input type="date" id="fromDate" />
+      </div>
+      <div class="col-4">
+        <label>تا تاریخ</label>
+        <input type="date" id="toDate" />
+      </div>
+      <div class="col-4">
+        <label>نماد</label>
+        <input id="fSymbol" placeholder="مثلاً: ETHUSDT" />
+      </div>
+      <div class="col-4">
+        <label>جهت</label>
+        <select id="fSide"><option value="">همه</option><option>BUY</option><option>SELL</option></select>
+      </div>
+      <div class="col-4">
+        <label>تایم‌فریم</label>
+        <select id="fTf"><option value="">همه</option><option>M1</option><option>M5</option><option>M15</option><option>M30</option><option>H1</option><option>H4</option><option>D1</option><option>W1</option></select>
+      </div>
+      <div class="col-4" style="display:flex;align-items:flex-end">
+        <button class="btn" id="btnResetFilters">ریست فیلتر</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div style="height:12px"></div>
+
+<section class="card">
+  <div class="section-title">لیست معاملات</div>
+  <div class="note" style="margin-bottom:8px">برای ویرایش روی ردیف کلیک کنید. برای حذف از دکمه زباله استفاده کنید.</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>تاریخ</th>
+          <th>نماد</th>
+          <th>جهت</th>
+          <th>TF</th>
+          <th>ورود</th>
+          <th>SL</th>
+          <th>TP</th>
+          <th>خروج</th>
+          <th>R:R</th>
+          <th>PNL</th>
+          <th>نتیجه</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+</section>
+
+<footer class="muted" style="text-align:center;margin:18px 0 8px">ساخته شده برای استفاده شخصی — تمام داده‌ها روی دستگاه شماست.</footer>
+
+  </div>  <input type="file" id="fileInput" accept="application/json" style="display:none" />  <script>
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+    const LS_KEY = 'trades_v1';
+
+    function readForm(){
+      const checked = $$('.ck:checked').map(x=>x.value);
+      return {
+        id: crypto.randomUUID(),
+        date: $('#date').value || today(),
+        timeIn: $('#timeIn').value || '',
+        symbol: ($('#symbol').value||'').trim().toUpperCase(),
+        side: $('#side').value,
+        tf: $('#tf').value,
+        size: toNum($('#size').value),
+        entry: toNum($('#entry').value),
+        sl: toNum($('#sl').value),
+        tp: toNum($('#tp').value),
+        checklist: checked,
+        dateOut: $('#dateOut').value || '',
+        timeOut: $('#timeOut').value || '',
+        exit: toNum($('#exit').value),
+        exitReason: $('#exitReason').value,
+        pnl: toNum($('#pnl').value),
+        notes: $('#notes').value.trim()
+      };
+    }
+
+    function toNum(v){ const n = parseFloat(v); return Number.isFinite(n) ? n : null; }
+    function today(){ return new Date().toISOString().slice(0,10); }
+
+    function computeRR({entry, sl, tp}){
+      if(entry==null || sl==null || tp==null) return '';
+      const risk = Math.abs(entry - sl);
+      const reward = Math.abs(tp - entry);
+      if(risk === 0) return '';
+      return (reward / risk).toFixed(2);
+    }
+
+    function computePct({entry, exit, side}){
+      if(entry==null || exit==null) return '';
+      const sign = side === 'BUY' ? 1 : -1;
+      const pct = ((exit - entry) / entry) * 100 * sign;
+      return pct.toFixed(2);
+    }
+
+    function computeRMultiple({entry, sl, exit, side}){
+      if(entry==null || sl==null || exit==null) return null;
+      const risk = (side==='BUY') ? (entry - sl) : (sl - entry);
+      const move = (side==='BUY') ? (exit - entry) : (entry - exit);
+      if(risk<=0) return null;
+      return +(move / risk).toFixed(2);
+    }
+
+    function saveTrade(){
+      const t = readForm();
+      // derive fields
+      t.rr = computeRR(t);
+      t.pct = computePct(t);
+      t.rMultiple = computeRMultiple(t);
+      if(t.pnl==null && t.rMultiple!=null && t.size!=null){
+        // Optional heuristic PnL = R-multiple * (risk per unit). If risk per unit unknown, leave blank.
+      }
+      const arr = loadAll();
+      arr.push(t);
+      localStorage.setItem(LS_KEY, JSON.stringify(arr));
+      render();
+      flash('معامله ذخیره شد');
+      clearForm();
+    }
+
+    function loadAll(){
+      try{ return JSON.parse(localStorage.getItem(LS_KEY)||'[]'); }
+      catch{ return []; }
+    }
+
+    function clearForm(){
+      ['timeIn','symbol','size','entry','sl','tp','dateOut','timeOut','exit','pnl','notes'].forEach(id=>{$('#'+id).value='';});
+      $$('.ck').forEach(c=>c.checked=false);
+      $('#rr').value=''; $('#pct').value='';
+    }
+
+    function flash(msg){
+      const el = document.createElement('div');
+      el.textContent = msg;
+      el.style.position='fixed'; el.style.bottom='16px'; el.style.left='50%'; el.style.transform='translateX(-50%)';
+      el.style.background='linear-gradient(135deg,#10b981,#34d399)'; el.style.color='#041018';
+      el.style.padding='10px 14px'; el.style.borderRadius='12px'; el.style.boxShadow='0 10px 30px rgba(0,0,0,.25)';
+      document.body.appendChild(el); setTimeout(()=>el.remove(),1600);
+    }
+
+    function render(){
+      const all = loadAll();
+      // filters
+      const fd = $('#fromDate').value; const td = $('#toDate').value; const sym = ($('#fSymbol').value||'').trim().toUpperCase();
+      const fSide = $('#fSide').value; const fTf = $('#fTf').value;
+      const data = all.filter(t=> (!fd || t.date>=fd) && (!td || t.date<=td) && (!sym || t.symbol.includes(sym)) && (!fSide || t.side===fSide) && (!fTf || t.tf===fTf));
+      // rows
+      const tbody = $('#rows'); tbody.innerHTML='';
+      data.sort((a,b)=> (a.date+b.timeIn).localeCompare(b.date+b.timeIn));
+      for(const t of data){
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${t.date||''}</td>
+          <td>${t.symbol||''}</td>
+          <td><span class="chip ${t.side==='BUY'?'buy':'sell'}">${t.side||''}</span></td>
+          <td>${t.tf||''}</td>
+          <td>${fmt(t.entry)}</td>
+          <td>${fmt(t.sl)}</td>
+          <td>${fmt(t.tp)}</td>
+          <td>${fmt(t.exit)}</td>
+          <td>${t.rr||''}</td>
+          <td>${fmt(t.pnl)}</td>
+          <td>${resultTag(t)}</td>
+          <td><button class="btn err" data-del="${t.id}">🗑</button></td>`;
+        tr.style.cursor='pointer';
+        tr.addEventListener('click', e=>{
+          if(e.target.closest('button')) return; // ignore click on delete
+          fillForm(t);
+        });
+        tbody.appendChild(tr);
+      }
+      tbody.addEventListener('click', e=>{
+        const id = e.target.getAttribute('data-del');
+        if(!id) return;
+        if(confirm('این معامله حذف شود؟')){
+          const arr = loadAll().filter(x=>x.id!==id);
+          localStorage.setItem(LS_KEY, JSON.stringify(arr));
+          render();
+        }
+      }, { once:true });
+
+      renderKPIs(data);
+      drawEquity(data);
+    }
+
+    function fmt(n){ return (n==null || n==='')? '' : (typeof n==='number'? (+n.toFixed(4)) : n); }
+
+    function resultTag(t){
+      let res = '';
+      if(t.exit!=null && t.entry!=null){
+        const pct = +computePct(t);
+        res = pct>=0 ? '<span class="chip win">برد</span>' : '<span class="chip loss">باخت</span>';
+      } else if (t.exitReason==='SL') res = '<span class="chip loss">باخت</span>';
+      else if (t.exitReason==='TP') res = '<span class="chip win">برد</span>';
+      return res;
+    }
+
+    function fillForm(t){
+      $('#date').value=t.date||''; $('#timeIn').value=t.timeIn||''; $('#symbol').value=t.symbol||'';
+      $('#side').value=t.side||'BUY'; $('#tf').value=t.tf||'H1'; $('#size').value=t.size??'';
+      $('#entry').value=t.entry??''; $('#sl').value=t.sl??''; $('#tp').value=t.tp??'';
+      $('#dateOut').value=t.dateOut||''; $('#timeOut').value=t.timeOut||''; $('#exit').value=t.exit??'';
+      $('#exitReason').value=t.exitReason||''; $('#pnl').value=t.pnl??''; $('#notes').value=t.notes||'';
+      $$('.ck').forEach(c=> c.checked = (t.checklist||[]).includes(c.value));
+      $('#rr').value = computeRR(t); $('#pct').value = computePct(t);
+      // When saving again, create a new id to avoid duplicates? We'll keep same id and overwrite.
+      currentEditId = t.id;
+      $('#btnSave').textContent='به‌روزرسانی';
+      $('#btnSave').classList.add('ok');
+    }
+
+    function updateOrInsert(){
+      const t = readForm();
+      t.rr = computeRR(t); t.pct = computePct(t); t.rMultiple = computeRMultiple(t);
+      const arr = loadAll();
+      if(currentEditId){
+        t.id = currentEditId;
+        const idx = arr.findIndex(x=>x.id===currentEditId);
+        if(idx>=0) arr[idx]=t; else arr.push(t);
+      } else { arr.push(t); }
+      localStorage.setItem(LS_KEY, JSON.stringify(arr));
+      currentEditId=null; $('#btnSave').textContent='ذخیره معامله'; $('#btnSave').classList.remove('ok');
+      render(); flash('ذخیره شد'); clearForm();
+    }
+
+    function renderKPIs(data){
+      const n = data.length;
+      const wins = data.filter(t=> (t.exit!=null && t.entry!=null && +computePct(t)>=0) || t.exitReason==='TP').length;
+      const losses = data.filter(t=> (t.exit!=null && t.entry!=null && +computePct(t)<0) || t.exitReason==='SL').length;
+      const winRate = n? ((wins/n)*100).toFixed(1):'0.0';
+      const pnls = data.map(t=> toNum(t.pnl)).filter(Number.isFinite);
+      const total = pnls.reduce((a,b)=>a+b,0);
+      const avg = pnls.length? (total/pnls.length).toFixed(2):'0.00';
+      const best = pnls.length? Math.max(...pnls).toFixed(2):'—';
+      const worst = pnls.length? Math.min(...pnls).toFixed(2):'—';
+      const rMults = data.map(t=> t.rMultiple).filter(Number.isFinite);
+      const expectancy = rMults.length? (rMults.reduce((a,b)=>a+b,0)/rMults.length).toFixed(2):'0.00';
+      const kpis = [
+        ['تعداد معاملات', n],
+        ['درصد برد', winRate+'%'],
+        ['مجموع PnL', total.toFixed? total.toFixed(2): total],
+        ['میانگین PnL', avg],
+        ['بهترین', best],
+        ['بدترین', worst],
+        ['اکسپکتنسی (R/Trade)', expectancy]
+      ];
+      const box = $('#kpis'); box.innerHTML='';
+      for(const [h,v] of kpis){
+        const d = document.createElement('div'); d.className='kpi';
+        d.innerHTML = `<div class="h">${h}</div><div class="v">${v}</div>`;
+        box.appendChild(d);
+      }
+    }
+
+    function drawEquity(data){
+      const pnls = data.map(t=> toNum(t.pnl)).map(x=> Number.isFinite(x)? x : 0);
+      const cum = []; let s=0; for(const p of pnls){ s+=p; cum.push(s); }
+      const cvs = $('#equity'); const ctx = cvs.getContext('2d');
+      const W = cvs.clientWidth, H = cvs.clientHeight; cvs.width=W; cvs.height=H;
+      ctx.clearRect(0,0,W,H);
+      ctx.strokeStyle = '#22d3ee'; ctx.lineWidth=2; ctx.beginPath();
+      if(cum.length===0){ ctx.moveTo(0,H/2); ctx.lineTo(W,H/2); ctx.stroke(); return; }
+      const min = Math.min(...cum, 0), max = Math.max(...cum, 0);
+      const pad = 16; const xStep = (W-2*pad)/Math.max(cum.length-1,1);
+      const y = v => H - ((v - min)/(max-min||1))*(H-2*pad) - pad;
+      cum.forEach((v,i)=>{ const x = pad + i*xStep; const yy = y(v); i? ctx.lineTo(x,yy): ctx.moveTo(x,yy); });
+      ctx.stroke();
+      // zero line
+      const zy = y(0); ctx.strokeStyle='#334155'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(pad, zy); ctx.lineTo(W-pad, zy); ctx.stroke();
+    }
+
+    function exportJSON(){
+      const blob = new Blob([JSON.stringify(loadAll(), null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url; a.download='trading-journal.json'; a.click();
+      setTimeout(()=>URL.revokeObjectURL(url), 1000);
+    }
+
+    function importJSON(){ $('#fileInput').click(); }
+
+    $('#fileInput').addEventListener('change', e=>{
+      const f = e.target.files[0]; if(!f) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try{
+          const arr = JSON.parse(reader.result);
+          if(Array.isArray(arr)){
+            localStorage.setItem(LS_KEY, JSON.stringify(arr));
+            render(); flash('وارد شد');
+          } else alert('فرمت فایل نامعتبر است');
+        }catch{ alert('خواندن فایل ناموفق بود'); }
+      };
+      reader.readAsText(f);
+      e.target.value='';
+    });
+
+    function clearAll(){ if(confirm('همه داده‌ها حذف شود؟')){ localStorage.removeItem(LS_KEY); render(); } }
+
+    // Auto-calc fields RR & PCT
+    ['entry','sl','tp'].forEach(id=> $('#'+id).addEventListener('input', ()=> $('#rr').value = computeRR(readForm())));
+    ['entry','exit','side'].forEach(id=> $('#'+id).addEventListener('input', ()=> $('#pct').value = computePct(readForm())));
+
+    // Save / Update
+    let currentEditId = null;
+    $('#btnSave').addEventListener('click', updateOrInsert);
+    $('#btnExport').addEventListener('click', exportJSON);
+    $('#btnImport').addEventListener('click', importJSON);
+    $('#btnClear').addEventListener('click', clearAll);
+    $('#btnResetFilters').addEventListener('click', ()=>{
+      ['fromDate','toDate','fSymbol'].forEach(id=> $('#'+id).value=''); $('#fSide').value=''; $('#fTf').value=''; render();
+    });
+
+    // Prefill today
+    $('#date').value = today();
+
+    // First render
+    render();
+  </script></body>
+</html>
