@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ژورنال معاملاتی</title>
+  <style>
+    body { font-family: Tahoma, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; direction: rtl; }
+    h1 { text-align: center; }
+    form, .stats, table { background: #fff; padding: 15px; margin-bottom: 20px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    label { display: block; margin: 10px 0 5px; }
+    input, select, textarea { width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc; }
+    button { background: #4CAF50; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #45a049; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+    th { background: #eee; }
+    .delete { color: red; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>ژورنال معاملاتی</h1>
+
+  <form id="tradeForm">
+    <label>تاریخ:</label>
+    <input type="date" id="date" required>
+
+    <label>نماد:</label>
+    <input type="text" id="symbol" placeholder="مثال: EURUSD" required>
+
+    <label>نوع معامله:</label>
+    <select id="type">
+      <option value="Buy">خرید</option>
+      <option value="Sell">فروش</option>
+    </select>
+
+    <label>قیمت ورود:</label>
+    <input type="number" id="entry" step="0.0001" required>
+
+    <label>حد ضرر (SL):</label>
+    <input type="number" id="sl" step="0.0001">
+
+    <label>حد سود (TP):</label>
+    <input type="number" id="tp" step="0.0001">
+
+    <label>قیمت خروج:</label>
+    <input type="number" id="exit" step="0.0001">
+
+    <label>نتیجه معامله:</label>
+    <select id="result">
+      <option value="Win">برد</option>
+      <option value="Loss">باخت</option>
+      <option value="BE">سر به سر</option>
+    </select>
+
+    <label>یادداشت:</label>
+    <textarea id="notes" rows="3"></textarea>
+
+    <button type="submit">ذخیره معامله</button>
+  </form>
+
+  <div class="stats">
+    <h3>آمار کلی</h3>
+    <p id="totalTrades">تعداد معاملات: 0</p>
+    <p id="winRate">درصد برد: 0%</p>
+    <p id="avgPnL">میانگین سود/ضرر: 0</p>
+  </div>
+
+  <table id="tradesTable">
+    <thead>
+      <tr>
+        <th>تاریخ</th><th>نماد</th><th>نوع</th><th>ورود</th><th>خروج</th><th>SL</th><th>TP</th><th>نتیجه</th><th>یادداشت</th><th>حذف</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById('tradeForm');
+    const tradesTable = document.getElementById('tradesTable').querySelector('tbody');
+
+    function loadTrades() {
+      const trades = JSON.parse(localStorage.getItem('trades') || '[]');
+      tradesTable.innerHTML = '';
+      let wins = 0, total = trades.length, sumPnL = 0;
+      trades.forEach((t, i) => {
+        const row = tradesTable.insertRow();
+        row.innerHTML = `
+          <td>${t.date}</td>
+          <td>${t.symbol}</td>
+          <td>${t.type}</td>
+          <td>${t.entry}</td>
+          <td>${t.exit}</td>
+          <td>${t.sl}</td>
+          <td>${t.tp}</td>
+          <td>${t.result}</td>
+          <td>${t.notes}</td>
+          <td><span class="delete" onclick="deleteTrade(${i})">🗑</span></td>
+        `;
+        if (t.result === "Win") wins++;
+        if (t.exit && t.entry) sumPnL += (parseFloat(t.exit) - parseFloat(t.entry)) * (t.type === "Buy" ? 1 : -1);
+      });
+      document.getElementById('totalTrades').textContent = "تعداد معاملات: " + total;
+      document.getElementById('winRate').textContent = "درصد برد: " + (total ? Math.round((wins/total)*100) : 0) + "%";
+      document.getElementById('avgPnL').textContent = "میانگین سود/ضرر: " + (total ? (sumPnL/total).toFixed(2) : 0);
+    }
+
+    function deleteTrade(i) {
+      let trades = JSON.parse(localStorage.getItem('trades') || '[]');
+      trades.splice(i,1);
+      localStorage.setItem('trades', JSON.stringify(trades));
+      loadTrades();
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const trade = {
+        date: document.getElementById('date').value,
+        symbol: document.getElementById('symbol').value,
+        type: document.getElementById('type').value,
+        entry: document.getElementById('entry').value,
+        sl: document.getElementById('sl').value,
+        tp: document.getElementById('tp').value,
+        exit: document.getElementById('exit').value,
+        result: document.getElementById('result').value,
+        notes: document.getElementById('notes').value
+      };
+      let trades = JSON.parse(localStorage.getItem('trades') || '[]');
+      trades.push(trade);
+      localStorage.setItem('trades', JSON.stringify(trades));
+      form.reset();
+      loadTrades();
+    });
+
+    loadTrades();
+  </script>
+</body>
+</html>
